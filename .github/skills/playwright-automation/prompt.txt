@@ -1,0 +1,9 @@
+Use the `playwright-automation` skill for this OrangeHRM Playwright + TypeScript repository.
+
+For the task below:
+1. Inspect the relevant current framework files before deciding what to change.
+2. Keep the requested scope; do not edit application code for a documentation- or skill-only request.
+3. Preserve existing naming, structure, dependencies, environment handling, and reporting unless a requested change requires otherwise.
+4. Validate only what is appropriate and report actual results, including skips, failures, and limitations.
+
+Task: [Describe the requested work]
