@@ -21,7 +21,7 @@ Apply these standards only when the user requests implementation. For a skill-on
 
 ## Credentials and typing
 
-- Use the existing environment variables: administrator credentials are `ORANGEHRM_USERNAME` and `ORANGEHRM_PASSWORD`; optional restricted-role credentials are `ORANGEHRM_RESTRICTED_USERNAME` and `ORANGEHRM_RESTRICTED_PASSWORD`.
+- Keep account data only in `fixtures/testAccounts.ts`; use `fixtures/test.ts` for environment selection and the Playwright fixture. `ORANGEHRM_ENV` selects `account1`, `account2`, etc. directly under the environment. The current tests treat `account1` as Admin and `account2` as ESS; keep each account's `role` consistent with its test purpose. Keep only non-sensitive examples in source; never commit real passwords.
 - Keep secrets out of source, logs, screenshots, traces, and committed environment files.
 - Preserve TypeScript strictness and formatting. Use meaningful types; avoid `any`, unnecessary dependencies, and wrappers around Playwright APIs.
 

@@ -14,7 +14,7 @@ export class LoginPage {
     this.usernameInput = page.getByRole('textbox', { name: 'Username' });
     this.passwordInput = page.getByRole('textbox', { name: 'Password' });
     this.loginButton = page.getByRole('button', { name: 'Login', exact: true });
-    this.loginHeading = page.getByRole('heading', { name: 'Login' });
+    this.loginHeading = page.locator('.orangehrm-login-title');
     this.fieldErrors = page.locator('.oxd-input-field-error-message');
     this.authenticationError = page
       .getByRole('alert')
@@ -22,14 +22,9 @@ export class LoginPage {
       .first();
   }
 
-  // async goto(): Promise<void> {
-  //   await this.page.goto('/web/index.php/auth/login', { waitUntil: 'domcontentloaded' });
-  //   await expect(this.loginHeading).toBeVisible();
-  // }
-
   async goto(): Promise<void> {
   await this.page.goto('/web/index.php/auth/login', { waitUntil: 'networkidle' });
-  await expect(this.loginHeading).toBeVisible();
+  await expect(this.loginHeading).toContainText('Login');
 }
 
   async login(username: string, password: string): Promise<void> {

@@ -8,6 +8,7 @@ Available package scripts currently include:
 
 - `npm.cmd run typecheck`
 - `npm.cmd run test:dev`, `npm.cmd run test:demo`, or `npm.cmd run test:prod`
+- `ENV=demo npx playwright test` / `ENV=prod npx playwright test` (headless default); add `--headed` to show the browser. In PowerShell, set `$env:ENV` first and invoke `npx.cmd`.
 - Add `-- --headed`, `-- --ui`, a spec path, or Playwright options after the selected environment script as needed.
 - `npm.cmd run test:smoke`, `npm.cmd run test:regression`, `npm.cmd run test:lifecycle`, `npm.cmd run test:role`
 - `npm.cmd run report`

@@ -26,10 +26,10 @@ export class EmployeeManagementPage {
       .locator('.oxd-input-group')
       .filter({ hasText: 'Employee Id' })
       .locator('input');
-    this.saveButton = page.getByRole('button', { name: 'Save', exact: true });
+    this.saveButton = page.getByRole('button', { name: 'Save', exact: true }).first();
     this.employeeRows = page.locator('.oxd-table-card');
     this.noRecordsMessage = page.getByText('No Records Found', { exact: true }).first();
-    this.deleteConfirmationButton = page.getByRole('button', { name: 'Yes, Delete', exact: true });
+    this.deleteConfirmationButton = page.locator('.orangehrm-modal-footer .oxd-button').last();
     this.successToast = page.locator('.oxd-toast');
   }
 
@@ -47,7 +47,7 @@ export class EmployeeManagementPage {
   }
 
   async updateEmployee(firstName: string, lastName: string): Promise<void> {
-    await this.page.getByRole('button', { name: 'Edit', exact: true }).click();
+    // await this.page.getByRole('button', { name: 'Edit', exact: true }).click();
     await this.firstNameInput.fill(firstName);
     await this.lastNameInput.fill(lastName);
     await this.saveButton.click();

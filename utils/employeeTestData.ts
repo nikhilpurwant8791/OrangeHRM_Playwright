@@ -7,7 +7,7 @@ export interface EmployeeTestData {
 }
 
 export function createEmployeeTestData(): EmployeeTestData {
-  const token = randomUUID().replaceAll('-', '').slice(0, 12);
+  const token = randomUUID().replaceAll('-', '').slice(0, 8);
 
   return {
     firstName: `QA${token}`,

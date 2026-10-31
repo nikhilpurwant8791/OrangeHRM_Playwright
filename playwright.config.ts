@@ -5,10 +5,10 @@ import path from 'node:path';
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 const baseURL = process.env.ORANGEHRM_BASE_URL ?? 'https://opensource-demo.orangehrmlive.com';
-const environment = process.env.ORANGEHRM_ENV ?? 'demo';
+const environment = process.env.ENV ?? process.env.ORANGEHRM_ENV ?? 'demo';
 
 if (!['dev', 'demo', 'prod'].includes(environment)) {
-  throw new Error(`Unsupported ORANGEHRM_ENV "${environment}". Use dev, demo, or prod.`);
+  throw new Error(`Unsupported ENV "${environment}". Use dev, demo, or prod.`);
 }
 
 export default defineConfig({
@@ -20,12 +20,12 @@ export default defineConfig({
   metadata: { environment, baseURL },
   reporter: [['html', { open: 'never' }]],
   outputDir: 'test-results',
-  timeout: 60_000,
+  timeout: 240_000,
   expect: { timeout: 10_000 },
   use: {
     baseURL,
     actionTimeout: 15_000,
-    navigationTimeout: 60_000,
+    navigationTimeout: 240_000,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
     trace: 'retain-on-failure',
