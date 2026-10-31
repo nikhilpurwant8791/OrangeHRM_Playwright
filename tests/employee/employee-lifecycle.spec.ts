@@ -1,13 +1,19 @@
-import { test, expect } from '@playwright/test';
+import { getEnvironment, test, expect } from '../../fixtures/test';
 import { EmployeeManagementPage } from '../../pages/EmployeeManagementPage';
 import { LoginPage } from '../../pages/LoginPage';
 import { createEmployeeTestData } from '../../utils/employeeTestData';
 
-const username = process.env.ORANGEHRM_USERNAME;
-const password = process.env.ORANGEHRM_PASSWORD;
+test('admin can create, update, and delete an employee @regression @lifecycle', async ({ page, accounts }) => {
+  test.skip(
+    getEnvironment() === 'prod',
+    'Employee lifecycle mutations are disabled in the prod environment.',
+  );
 
-test('admin can create, update, and delete an employee @regression @lifecycle', async ({ page }) => {
-  test.skip(!username || !password, 'Set ORANGEHRM_USERNAME and ORANGEHRM_PASSWORD in .env');
+  const adminAccount = accounts.account1;
+  test.skip(
+    !adminAccount.username || !adminAccount.password,
+    'Configure the selected environment admin account credentials.',
+  );
 
   const loginPage = new LoginPage(page);
   const employeePage = new EmployeeManagementPage(page);
@@ -20,7 +26,7 @@ test('admin can create, update, and delete an employee @regression @lifecycle', 
 
   try {
     await loginPage.goto();
-    await loginPage.login(username!, password!);
+    await loginPage.login(adminAccount.username, adminAccount.password);
     await loginPage.expectDashboard();
     await expect(employeePage.pimMenu).toBeVisible();
 
