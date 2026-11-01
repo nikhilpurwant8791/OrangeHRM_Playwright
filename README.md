@@ -14,7 +14,7 @@ Test accounts are listed in `fixtures/testAccounts.ts`; replace the example valu
 
 ```bash
 npm install
-npx playwright install chromium
+npx playwright install
 ```
 
 ## Configure the environment
@@ -26,7 +26,7 @@ ENV=demo
 ORANGEHRM_BASE_URL=https://opensource-demo.orangehrmlive.com
 ```
 
-The tracked `.env.dev`, `.env.demo`, and `.env.prod` profiles select which account set is used and currently all point to the public OrangeHRM demo URL. The selected label and URL are recorded in Playwright run metadata. Replace example account values with authorized credentials; configure the ESS account as a non-production account without PIM access for the role-visibility check.
+The tracked `.env.dev`, `.env.demo`, and `.env.prod` profiles select which account set is used and currently all point to the public OrangeHRM demo URL. The selected label and URL are recorded in Playwright run metadata. Replace example account values with authorized credentials.
 
 The employee lifecycle test creates, updates, and deletes data, so it is skipped when `ENV=prod` (or `ORANGEHRM_ENV=prod`). Use a dedicated non-production tenant for state-changing tests.
 
@@ -107,9 +107,50 @@ npm run test:lifecycle
 npm run test:role
 ```
 
-The Playwright project targets Chromium and runs single-worker against the shared demo URL and in CI to limit contention. Screenshots, videos, and traces are retained for failed tests, and the HTML report is written to `playwright-report/`. CI uploads both report and test-result artifacts. To point a profile at a separate deployment later, edit that profile's `ORANGEHRM_BASE_URL`.
+The Playwright project targets Chromium, Firefox, and WebKit and runs single-worker against the shared demo URL and in CI to limit contention. Screenshots, videos, and traces are retained for failed tests, and the HTML report is written to `playwright-report/`. CI uploads both report and test-result artifacts. To point a profile at a separate deployment later, edit that profile's `ORANGEHRM_BASE_URL`.
 
 For GitHub Actions, configure the repository variables `ORANGEHRM_BASE_URL` and `ORANGEHRM_ENV`. Account data is maintained in `fixtures/testAccounts.ts`.
+
+## Jenkins
+
+There is no `Jenkinsfile` in this repository yet. The project can run from Jenkins on a Linux agent, but complete CI setup requires a pipeline and secure test-account configuration.
+
+### Agent requirements
+
+- Node.js 20 or newer and npm.
+- A Linux environment where Playwright can install and run Chromium, Firefox, and WebKit, including their required OS dependencies. The agent must have permission to install those dependencies, or use a preconfigured Playwright agent image.
+- Network access to the configured OrangeHRM URL.
+
+### Pipeline steps
+
+1. Check out the repository.
+2. Select a non-production environment and set `ORANGEHRM_BASE_URL`.
+3. Install locked dependencies with `npm ci`.
+4. Install Playwright browsers and their Linux dependencies with `npx playwright install --with-deps`.
+5. Run `npm run typecheck` and the desired test command, for example `npm run test:demo`.
+6. Archive `playwright-report/**` and `test-results/**` in a Jenkins post-build `always` action so diagnostics are retained when tests fail.
+
+For example, the test commands can be run in a Jenkins shell step after the agent is prepared:
+
+```sh
+npm ci
+npx playwright install --with-deps
+npm run typecheck
+npm run test:demo
+```
+
+In the job's post-build action, archive these paths:
+
+```text
+playwright-report/**
+test-results/**
+```
+
+Both output directories are ignored by Git intentionally; publish them as Jenkins build artifacts rather than committing generated reports, screenshots, videos, or traces.
+
+**Credential requirement:** `fixtures/testAccounts.ts` currently contains account values in the repository, and the tests read those values directly. They are not loaded from Jenkins Credentials or environment variables. Do not use real or production credentials with this setup. Before using Jenkins with authorized accounts, change the fixture to read credentials supplied securely by Jenkins, bind them from Jenkins Credentials, and avoid logging them. The pipeline commands above are therefore an execution outline, not a secure, ready-to-run Jenkins pipeline for real accounts.
+
+The lifecycle test is intentionally skipped when the selected environment is `prod`; use a dedicated non-production tenant for tests that create, update, and delete employee records.
 
 Run only the login scenarios with:
 
@@ -123,6 +164,6 @@ The employee lifecycle creates a unique employee, checks the created record, upd
 
 - If an account-dependent test fails authentication, verify the credentials in the selected environment's `fixtures/testAccounts.ts` entry.
 - If the demo rejects valid credentials, confirm the target URL and account in a browser; the public demo can be rate-limited or reset.
-- If Chromium is missing, run `npx playwright install chromium`.
+- If a browser is missing, run `npx playwright install` (or `npx playwright install --with-deps` on Linux).
 - For a failure, inspect the HTML report and the corresponding screenshot, video, and trace under `test-results/`.
 - Do not add real passwords, authentication state, screenshots, traces, or reports to source control.
